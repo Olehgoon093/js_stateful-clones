@@ -7,36 +7,39 @@
  * @return {Object[]}
  */
 function transformStateWithClones(state, actions) {
-  let clone = {
+  let currentState = {
     ...state,
   };
-  const result = [];
+  const statesHistory = [];
 
   for (const { type, extraData, keysToRemove } of actions) {
     switch (type) {
       case 'addProperties':
-        clone = {
-          ...clone,
+        currentState = {
+          ...currentState,
           ...extraData,
         };
         break;
 
       case 'removeProperties':
-        clone = { ...clone };
+        currentState = { ...currentState };
 
         for (const key of keysToRemove) {
-          delete clone[key];
+          delete currentState[key];
         }
         break;
 
       case 'clear':
-        clone = {};
+        currentState = {};
         break;
+
+      default:
+        throw new Error(`Unknown action type: ${type}`);
     }
-    result.push(clone);
+    statesHistory.push(currentState);
   }
 
-  return result;
+  return statesHistory;
 }
 
 module.exports = transformStateWithClones;
